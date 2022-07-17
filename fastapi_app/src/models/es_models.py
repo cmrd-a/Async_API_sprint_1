@@ -5,16 +5,16 @@ class Person(Base):
     name: str
 
 
-class FilmWork(Base):
+class Film(Base):
     title: str
-    description: str
-    imdb_rating: int
+    description: str | None
+    imdb_rating: int | None
     genre: list[str] = []
-    actors_names: list[str] = []
-    writers_names: list[str] = []
-    writers: list[Person]
-    actors: list[Person]
-    director: list[str] = []
+    actors_names: list[str] | None = None
+    writers_names: list[str] | None = None
+    writers: list[Person] | None
+    actors: list[Person] | None
+    director: list[str] | str | None
 
 
 class Genre(Base):
