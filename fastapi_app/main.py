@@ -22,7 +22,7 @@ app = FastAPI(
 
 @app.on_event("startup")
 async def startup():
-    redis.redis = await aioredis.create_redis_pool((config.redis_host, config.redis_port), minsize=10, maxsize=20)
+    redis.redis = await aioredis.from_url(config.redis_url)
     elastic.es = AsyncElasticsearch(hosts=[f"{config.es_host}:{config.es_port}"])
 
 
