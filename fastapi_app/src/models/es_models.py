@@ -1,17 +1,11 @@
-from uuid import UUID
-
-from pydantic import BaseModel
+from models.common import Base
 
 
-class UUIDMixin(BaseModel):
-    id: UUID
-
-
-class Person(UUIDMixin):
+class Person(Base):
     name: str
 
 
-class FilmWork(UUIDMixin):
+class FilmWork(Base):
     title: str
     description: str
     imdb_rating: int
@@ -20,9 +14,9 @@ class FilmWork(UUIDMixin):
     writers_names: list[str] = []
     writers: list[Person]
     actors: list[Person]
-    director: str
+    director: list[str] = []
 
 
-class Genre(UUIDMixin):
+class Genre(Base):
     name: str
     description: str
