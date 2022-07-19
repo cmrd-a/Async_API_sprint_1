@@ -1,5 +1,5 @@
 from extract import PGExtractor
-from models import ElasticMoviesSchemaModel, ElasticPersonsSchemaModel
+from models import ElasticMoviesSchemaModel, ElasticPersonsSchemaModel, ElasticGenresSchemaModel
 
 
 class BatchTransform:
@@ -64,3 +64,20 @@ class BatchTransform:
                 )
 
             yield transformed_persons_batch, persons_offset
+
+    def transform_genre_data_batches(self) -> list[ElasticGenresSchemaModel]:
+
+        for modified_genres_batch, genres_offset in self.extractor.get_genres_batch():
+
+            transformed_genres_batch = []
+
+            for genre in modified_genres_batch:
+                transformed_genres_batch.append(
+                    ElasticGenresSchemaModel(
+                        id=genre.id,
+                        name=genre.name,
+                        description=genre.description,
+                    )
+                )
+
+            yield transformed_genres_batch, genres_offset

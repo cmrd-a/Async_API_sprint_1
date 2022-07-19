@@ -80,3 +80,13 @@ class ESLoader:
                 offset=persons_offset,
             )
 
+    def load_genres_batch_to_elastic(self) -> None:
+        """Метод загружает батчи данных по жанрам в elastic и сохраняет текущий offset."""
+
+        for transformed_genres_batch, genres_offset in self.transformer.transform_genre_data_batches():
+            self.bulk_to_elastic(
+                index='genres',
+                elastic_schema_models_batch=transformed_genres_batch,
+                offset_name='genres_offset',
+                offset=genres_offset,
+            )

@@ -125,7 +125,7 @@ class PGExtractor:
                 break
 
     def get_persons_batch(self):
-        """Получаем актеров, данные по которым изменились с момента last_extracting_time,
+        """Получаем актеров, данные по которым изменились с момента persons_last_extracting_time,
         батчами, по self.batch_size штук.
         """
 
@@ -166,42 +166,42 @@ class PGExtractor:
                 break
 
     def get_genres_batch(self):
-        """Получаем актеров, данные по которым изменились с момента last_extracting_time,
+        """Получаем жанры, данные по которым изменились с момента genres_last_extracting_time,
         батчами, по self.batch_size штук.
         """
 
-        persons_offset = self.state.retrieve_state().get('persons_offset', 0)
+        genres_offset = self.state.retrieve_state().get('genres_offset', 0)
 
         while True:
             # При первом переливе выставляем минимальную дату, для получения всех записей.
-            persons_last_extracting_time = self.state.retrieve_state().get(
-                'persons_last_extracting_time',
+            genres_last_extracting_time = self.state.retrieve_state().get(
+                'genres_last_extracting_time',
                 datetime.min.replace(tzinfo=pytz.utc).isoformat()
             )
 
             query = f"""
-                SELECT id, full_name
-                FROM content.person
-                WHERE modified > '{persons_last_extracting_time}'
-                OFFSET {persons_offset}
+                SELECT id, name, description
+                FROM content.genre
+                WHERE modified > '{genres_last_extracting_time}'
+                OFFSET {genres_offset}
                 LIMIT {self.batch_size};
             """
 
-            modified_persons_batch = self.execute_query(query)
+            modified_genres_batch = self.execute_query(query)
 
-            if not modified_persons_batch:
-                persons_last_extracting_time = datetime.utcnow().replace(tzinfo=pytz.utc).isoformat()
-                logger.info(f'Данные по актерам не изменялись. Дата проверки {persons_last_extracting_time}')
+            if not modified_genres_batch:
+                genres_last_extracting_time = datetime.utcnow().replace(tzinfo=pytz.utc).isoformat()
+                logger.info(f'Данные по жанрам не изменялись. Дата проверки {genres_last_extracting_time}')
                 self.state.save_state({
-                    'persons_last_extracting_time': persons_last_extracting_time,
-                    'persons_offset': 0,
+                    'genres_last_extracting_time': genres_last_extracting_time,
+                    'genres_offset': 0,
                 })
                 break
 
-            modified_persons_batch_len = len(modified_persons_batch)
-            persons_offset += modified_persons_batch_len
+            modified_genres_batch_len = len(modified_genres_batch)
+            genres_offset += modified_genres_batch_len
 
-            yield modified_persons_batch, persons_offset
+            yield modified_genres_batch, genres_offset
 
-            if modified_persons_batch_len < self.batch_size:
+            if modified_genres_batch_len < self.batch_size:
                 break

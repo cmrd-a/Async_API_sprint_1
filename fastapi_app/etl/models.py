@@ -32,6 +32,14 @@ class ElasticPersonsSchemaModel(BaseModel):
     full_name: str
 
 
+class ElasticGenresSchemaModel(BaseModel):
+    """Модель соответствует схеме индекса genres."""
+
+    id: str
+    name: str
+    description: Optional[str] = ''
+
+
 class EnvSettings(BaseSettings):
     """Настройки из .env"""
 

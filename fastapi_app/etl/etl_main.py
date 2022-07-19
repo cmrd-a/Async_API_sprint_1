@@ -19,4 +19,5 @@ if __name__ == '__main__':
     while True:
         es_loader.load_films_batch_to_elastic()
         es_loader.load_persons_batch_to_elastic()
+        es_loader.load_genres_batch_to_elastic()
         sleep(1)
