@@ -1,4 +1,9 @@
 fastapi[all]==0.79.0
 uvicorn[standard]==0.17.6
+backoff==2.1.2
+pydantic==1.9.1
+psycopg2==2.9.3
+python-dotenv==0.20.0
+pytz==2022.1
 elasticsearch[async]==8.3.1
 aioredis==2.0.1
