@@ -6,13 +6,10 @@ from state import JsonFileStorage
 from transform import BatchTransform
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
-    storage = JsonFileStorage('state/state.json')
-    pg_extractor = PGExtractor(
-        batch_size=100,
-        state=storage
-    )
+    storage = JsonFileStorage("state/state.json")
+    pg_extractor = PGExtractor(batch_size=100, state=storage)
     batch_transform = BatchTransform(extractor=pg_extractor)
     es_loader = ESLoader(transformer=batch_transform, state=storage)
 

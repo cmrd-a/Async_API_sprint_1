@@ -2,7 +2,7 @@ from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 
-from models.api_models import Film
+from models.api_models import Film, FilmByPerson
 from services.film import FilmService, get_film_service
 
 
@@ -30,3 +30,12 @@ async def films_list(
     if not films:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="films not found")
     return [Film(id=film.id, title=film.title) for film in films]
+
+
+@router.get("/search", response_model=list[FilmByPerson])
+async def films_search(
+    query: str | None = Query(default=None),
+    page_size: int = Query(default=50, alias="page[size]"),
+    page_number: int = Query(default=1, alias="page[number]"),
+) -> FilmByPerson:
+    pass

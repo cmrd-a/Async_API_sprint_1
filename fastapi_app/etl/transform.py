@@ -19,18 +19,14 @@ class BatchTransform:
                 unique_actors = []
                 if film.actors:
                     unique_actors = [
-                                dict(actors_tuple) for actors_tuple in {
-                                    tuple(actors.items()) for actors in film.actors
-                                }
-                            ]
+                        dict(actors_tuple) for actors_tuple in {tuple(actors.items()) for actors in film.actors}
+                    ]
 
                 unique_writers = []
                 if film.writers:
                     unique_writers = [
-                                dict(writers_tuple) for writers_tuple in {
-                                    tuple(writers.items()) for writers in film.writers
-                                }
-                            ]
+                        dict(writers_tuple) for writers_tuple in {tuple(writers.items()) for writers in film.writers}
+                    ]
 
                 transformed_batch.append(
                     ElasticMoviesSchemaModel(
@@ -39,9 +35,9 @@ class BatchTransform:
                         genre=film.genres,
                         title=film.title,
                         description=film.description,
-                        director=film.directors[0] if film.directors else '',
-                        actors_names=[actor['name'] for actor in unique_actors],
-                        writers_names=[writer['name'] for writer in unique_writers],
+                        director=film.directors[0] if film.directors else "",
+                        actors_names=[actor["name"] for actor in unique_actors],
+                        writers_names=[writer["name"] for writer in unique_writers],
                         actors=unique_actors,
                         writers=unique_writers,
                     )
