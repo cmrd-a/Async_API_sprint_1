@@ -28,12 +28,12 @@ class FilmService:
         return film
 
     async def get_list(
-            self,
-            sort: str = None,
-            filter_genre: str = None,
-            filter_person: str = None,
-            page_size: int = 50,
-            page_number: int = 1,
+        self,
+        sort: str = None,
+        filter_genre: str = None,
+        filter_person: str = None,
+        page_size: int = 50,
+        page_number: int = 1,
     ) -> list[Film]:
         params = f"{sort}/{filter_genre}/{filter_person}/{page_size}/{page_number}"
         films = await self._get_list_from_cache(params)
@@ -78,6 +78,6 @@ class FilmService:
 
 @lru_cache()
 def get_film_service(
-        redis: Redis = Depends(get_redis), elastic: AsyncElasticsearch = Depends(get_elastic)
+    redis: Redis = Depends(get_redis), elastic: AsyncElasticsearch = Depends(get_elastic)
 ) -> FilmService:
     return FilmService(redis, elastic)
