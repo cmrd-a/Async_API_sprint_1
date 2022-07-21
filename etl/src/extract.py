@@ -6,7 +6,6 @@ import psycopg2
 import pytz
 from psycopg2.extensions import cursor
 from psycopg2.extras import NamedTupleCursor, RealDictRow
-
 from logger import logger
 from models import EnvSettings
 from state import BaseStorage
@@ -14,11 +13,11 @@ from state import BaseStorage
 settings = EnvSettings()
 
 POSTGRES_CONNECTION = {
-    'dbname': settings.pg_db_name,
-    'user': settings.pg_db_user,
-    'password': settings.pg_db_password,
-    'host': settings.pg_db_host,
-    'port': settings.pg_db_port,
+    "dbname": settings.pg_db_name,
+    "user": settings.pg_db_user,
+    "password": settings.pg_db_password,
+    "host": settings.pg_db_host,
+    "port": settings.pg_db_port,
 }
 
 
@@ -38,7 +37,7 @@ class PGExtractor:
         backoff_log_level=logging.ERROR,
     )
     def pg_connection(self) -> cursor:
-        logger.info('Соединение с postgres...')
+        logger.info("Соединение с postgres...")
         postgres_connection = psycopg2.connect(**POSTGRES_CONNECTION, cursor_factory=NamedTupleCursor)
         return postgres_connection.cursor()
 
@@ -53,20 +52,18 @@ class PGExtractor:
             return self.cursor.fetchall()
         except psycopg2.Error as exc:
             self.cursor = self.pg_connection()
-            logger.exception(f'Ошибка извлечения данных из postgres: {exc}')
+            logger.exception(f"Ошибка извлечения данных из postgres: {exc}")
             raise exc
 
     def get_modified_films_batch(self) -> tuple[list[RealDictRow], int]:
         """Получаем фильмы, изменившиеся с момента last_extracting_time, батчами, по self.batch_size штук."""
 
-        films_offset = self.state.retrieve_state().get('films_offset', 0)
+        films_offset = self.state.retrieve_state().get("films_offset", 0)
 
         while True:
-
             # При первом переливе выставляем минимальную дату, для получения всех записей.
             films_last_extracting_time = self.state.retrieve_state().get(
-                'films_last_extracting_time',
-                datetime.min.replace(tzinfo=pytz.utc).isoformat()
+                "films_last_extracting_time", datetime.min.replace(tzinfo=pytz.utc).isoformat()
             )
 
             query = f"""
@@ -109,11 +106,13 @@ class PGExtractor:
 
             if not modified_films_batch:
                 films_last_extracting_time = datetime.utcnow().replace(tzinfo=pytz.utc).isoformat()
-                logger.info(f'Фильмы не изменялись. Дата проверки {films_last_extracting_time}')
-                self.state.save_state({
-                    'films_last_extracting_time': films_last_extracting_time,
-                    'films_offset': 0,
-                })
+                logger.info(f"Фильмы не изменялись. Дата проверки {films_last_extracting_time}")
+                self.state.save_state(
+                    {
+                        "films_last_extracting_time": films_last_extracting_time,
+                        "films_offset": 0,
+                    }
+                )
                 break
 
             modified_films_batch_len = len(modified_films_batch)
@@ -129,13 +128,12 @@ class PGExtractor:
         батчами, по self.batch_size штук.
         """
 
-        persons_offset = self.state.retrieve_state().get('persons_offset', 0)
+        persons_offset = self.state.retrieve_state().get("persons_offset", 0)
 
         while True:
             # При первом переливе выставляем минимальную дату, для получения всех записей.
             persons_last_extracting_time = self.state.retrieve_state().get(
-                'persons_last_extracting_time',
-                datetime.min.replace(tzinfo=pytz.utc).isoformat()
+                "persons_last_extracting_time", datetime.min.replace(tzinfo=pytz.utc).isoformat()
             )
 
             query = f"""
@@ -150,11 +148,13 @@ class PGExtractor:
 
             if not modified_persons_batch:
                 persons_last_extracting_time = datetime.utcnow().replace(tzinfo=pytz.utc).isoformat()
-                logger.info(f'Данные по актерам не изменялись. Дата проверки {persons_last_extracting_time}')
-                self.state.save_state({
-                    'persons_last_extracting_time': persons_last_extracting_time,
-                    'persons_offset': 0,
-                })
+                logger.info(f"Данные по актерам не изменялись. Дата проверки {persons_last_extracting_time}")
+                self.state.save_state(
+                    {
+                        "persons_last_extracting_time": persons_last_extracting_time,
+                        "persons_offset": 0,
+                    }
+                )
                 break
 
             modified_persons_batch_len = len(modified_persons_batch)
@@ -170,13 +170,12 @@ class PGExtractor:
         батчами, по self.batch_size штук.
         """
 
-        genres_offset = self.state.retrieve_state().get('genres_offset', 0)
+        genres_offset = self.state.retrieve_state().get("genres_offset", 0)
 
         while True:
             # При первом переливе выставляем минимальную дату, для получения всех записей.
             genres_last_extracting_time = self.state.retrieve_state().get(
-                'genres_last_extracting_time',
-                datetime.min.replace(tzinfo=pytz.utc).isoformat()
+                "genres_last_extracting_time", datetime.min.replace(tzinfo=pytz.utc).isoformat()
             )
 
             query = f"""
@@ -191,11 +190,13 @@ class PGExtractor:
 
             if not modified_genres_batch:
                 genres_last_extracting_time = datetime.utcnow().replace(tzinfo=pytz.utc).isoformat()
-                logger.info(f'Данные по жанрам не изменялись. Дата проверки {genres_last_extracting_time}')
-                self.state.save_state({
-                    'genres_last_extracting_time': genres_last_extracting_time,
-                    'genres_offset': 0,
-                })
+                logger.info(f"Данные по жанрам не изменялись. Дата проверки {genres_last_extracting_time}")
+                self.state.save_state(
+                    {
+                        "genres_last_extracting_time": genres_last_extracting_time,
+                        "genres_offset": 0,
+                    }
+                )
                 break
 
             modified_genres_batch_len = len(modified_genres_batch)

@@ -19,17 +19,17 @@ app = FastAPI(
     default_response_class=ORJSONResponse,
 )
 
-
-@app.on_event("startup")
-async def startup():
-    redis.redis = await aioredis.from_url(config.redis_url)
-    elastic.es = AsyncElasticsearch(hosts=[f"{config.es_host}:{config.es_port}"])
-
-
-@app.on_event("shutdown")
-async def shutdown():
-    await redis.redis.close()
-    await elastic.es.close()
+#
+# @app.on_event("startup")
+# async def startup():
+#     redis.redis = await aioredis.from_url(config.redis_url)
+#     elastic.es = AsyncElasticsearch(hosts=[f"{config.es_host}:{config.es_port}"])
+#
+#
+# @app.on_event("shutdown")
+# async def shutdown():
+#     await redis.redis.close()
+#     await elastic.es.close()
 
 
 app.include_router(films.router, prefix="/api/v1/films", tags=["film_works"])

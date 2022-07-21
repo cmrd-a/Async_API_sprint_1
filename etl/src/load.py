@@ -29,8 +29,8 @@ class ESLoader:
         backoff_log_level=logging.ERROR,
     )
     def connect_to_es(self) -> Elasticsearch:
-        logger.info('Соединение с Elasticsearch...')
-        return Elasticsearch(hosts=settings.es_host, retry_on_timeout=False, max_retries=1)
+        logger.info("Соединение с Elasticsearch...")
+        return Elasticsearch(hosts=settings.es_url, retry_on_timeout=False, max_retries=1)
 
     @backoff.on_exception(
         exception=(ConnectionError, ConnectionTimeout, TransportError),
@@ -40,22 +40,23 @@ class ESLoader:
         backoff_log_level=logging.ERROR,
     )
     def bulk_to_elastic(
-            self,
-            index: str,
-            elastic_schema_models_batch: ElasticPersonsSchemaModel | ElasticMoviesSchemaModel,
-            offset_name: str,
-            offset: int,
+        self,
+        index: str,
+        elastic_schema_models_batch: ElasticPersonsSchemaModel | ElasticMoviesSchemaModel,
+        offset_name: str,
+        offset: int,
     ):
         actions = [
             {
                 "_index": index,
                 "_id": film.id,
                 "_source": film.json(),
-            } for film in elastic_schema_models_batch
+            }
+            for film in elastic_schema_models_batch
         ]
 
         self.state.save_state({offset_name: offset})
-        logger.info(f'Записан batch длиной: {len(actions)}')
+        logger.info(f"Записан batch длиной: {len(actions)}")
         bulk(self.elastic_connection, actions)
 
     def load_films_batch_to_elastic(self) -> None:
@@ -63,9 +64,9 @@ class ESLoader:
 
         for elastic_movies_schema_models_batch, films_offset in self.transformer.transform_film_data_batches():
             self.bulk_to_elastic(
-                index='movies',
+                index="movies",
                 elastic_schema_models_batch=elastic_movies_schema_models_batch,
-                offset_name='films_offset',
+                offset_name="films_offset",
                 offset=films_offset,
             )
 
@@ -74,9 +75,9 @@ class ESLoader:
 
         for transformed_persons_batch, persons_offset in self.transformer.transform_persons_data_batches():
             self.bulk_to_elastic(
-                index='persons',
+                index="persons",
                 elastic_schema_models_batch=transformed_persons_batch,
-                offset_name='persons_offset',
+                offset_name="persons_offset",
                 offset=persons_offset,
             )
 
@@ -85,8 +86,8 @@ class ESLoader:
 
         for transformed_genres_batch, genres_offset in self.transformer.transform_genre_data_batches():
             self.bulk_to_elastic(
-                index='genres',
+                index="genres",
                 elastic_schema_models_batch=transformed_genres_batch,
-                offset_name='genres_offset',
+                offset_name="genres_offset",
                 offset=genres_offset,
             )
