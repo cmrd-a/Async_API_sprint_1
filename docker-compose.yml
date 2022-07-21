@@ -58,6 +58,11 @@ services:
     depends_on:
       - django_admin_panel
 
+  redis:
+    image: redis:7.0.4
+    ports:
+      - "6379:6379"
+
 volumes:
   pg_data:
   etl_state:

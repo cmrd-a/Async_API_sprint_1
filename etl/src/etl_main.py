@@ -5,7 +5,6 @@ from load import ESLoader
 from state import JsonFileStorage
 from transform import BatchTransform
 
-
 if __name__ == "__main__":
 
     storage = JsonFileStorage("state/state.json")

@@ -6,6 +6,7 @@ import psycopg2
 import pytz
 from psycopg2.extensions import cursor
 from psycopg2.extras import NamedTupleCursor, RealDictRow
+
 from logger import logger
 from models import EnvSettings
 from state import BaseStorage

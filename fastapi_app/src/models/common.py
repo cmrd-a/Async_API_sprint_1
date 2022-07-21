@@ -1,5 +1,5 @@
 import orjson
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 def orjson_dumps(v, *, default):
@@ -7,7 +7,7 @@ def orjson_dumps(v, *, default):
 
 
 class Base(BaseModel):
-    id: str = Field(alias="uuid")
+    id: str
 
     class Config:
         json_loads = orjson.loads
