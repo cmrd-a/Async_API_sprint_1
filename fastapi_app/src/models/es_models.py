@@ -19,4 +19,4 @@ class Film(Base):
 
 class Genre(Base):
     name: str
-    description: str
+    description: str | None
