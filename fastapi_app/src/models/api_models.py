@@ -10,13 +10,11 @@ class Genre(Base):
 
 
 class FilmByPerson(Base):
-    uuid: str
     title: str
     imdb_rating: float
 
 
 class Person(Base):
-    uuid: str
     full_name: str
     role: str
     film_ids: list[str]
