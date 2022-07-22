@@ -1,5 +1,5 @@
 black:
 	black . --line-length 120
 
-redis:
-	docker compose up redis
+dbs:
+	docker compose up postgres redis elastic -d

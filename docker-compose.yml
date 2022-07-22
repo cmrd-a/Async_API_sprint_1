@@ -11,12 +11,6 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data
       - ./postgres:/docker-entrypoint-initdb.d
-    command: [
-      "postgres",
-      "-c", "log_statement=all",
-      "-c", "log_connections=true",
-      "-c", "log_disconnections=true"
-    ]
 
   elastic:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.3.0
@@ -25,6 +19,8 @@ services:
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
 
   etl:
     build:
@@ -44,7 +40,21 @@ services:
     env_file:
       - .env
     depends_on:
-        - postgres
+      - postgres
+
+  redis:
+    image: redis:7.0.4
+    ports:
+      - "6379:6379"
+
+  fastapi_app:
+    build:
+      context: fastapi_app
+    env_file:
+      - .env
+    depends_on:
+      - elastic
+      - redis
 
   nginx:
     image: nginx:1.22
@@ -57,14 +67,11 @@ services:
       - ./nginx/data:/data/:ro
     depends_on:
       - django_admin_panel
-
-  redis:
-    image: redis:7.0.4
-    ports:
-      - "6379:6379"
+      - fastapi_app
 
 volumes:
   pg_data:
+  es_data:
   etl_state:
   static:
 
