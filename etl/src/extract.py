@@ -76,13 +76,19 @@ class PGExtractor:
                     fw.type, 
                     fw.created, 
                     fw.modified, 
-                    ARRAY_AGG(DISTINCT g.name) as genres,
+                    ARRAY_AGG(JSON_BUILD_OBJECT(
+                        'id', g.id, 
+                        'name', g.name
+                        )) as genres,
                     ARRAY_AGG(JSON_BUILD_OBJECT(
                         'id', p.id, 
                         'name', p.full_name
                         ))
                         FILTER (WHERE pfw.role = 'actor') AS actors,
-                    ARRAY_AGG(DISTINCT p.full_name)
+                    ARRAY_AGG(JSON_BUILD_OBJECT(
+                        'id', p.id, 
+                        'name', p.full_name
+                        ))
                         FILTER (WHERE pfw.role = 'director') AS directors,
                     ARRAY_AGG(JSON_BUILD_OBJECT(
                         'id', p.id, 
