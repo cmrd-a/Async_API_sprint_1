@@ -13,6 +13,7 @@ class Person(BaseModel):
 
 class Genre(BaseModel):
     """В elastic каждый жанр содержит id и full_name."""
+
     id: str
     name: str
 
