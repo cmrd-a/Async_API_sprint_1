@@ -11,12 +11,6 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data
       - ./postgres:/docker-entrypoint-initdb.d
-    command: [
-      "postgres",
-      "-c", "log_statement=all",
-      "-c", "log_connections=true",
-      "-c", "log_disconnections=true"
-    ]
 
   elastic:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.3.0
