@@ -11,15 +11,21 @@ class Person(BaseModel):
     name: str
 
 
+class Genre(BaseModel):
+    """В elastic каждый жанр содержит id и full_name."""
+    id: str
+    name: str
+
+
 class ElasticMoviesSchemaModel(BaseModel):
     """Модель соответствует схеме индекса movies."""
 
     id: str
-    imdb_rating: Optional[float] = Field(alias="rating", default=0)
-    genre: list = []
+    imdb_rating: float | None = 0.0
+    genres: list[Genre] = []
     title: str
     description: Optional[str]
-    director: str = ""
+    directors: list[Person] = []
     actors_names: list[str] = []
     writers_names: list[str] = []
     actors: list[Person] = []
