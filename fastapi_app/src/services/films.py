@@ -9,8 +9,7 @@ from db.elastic import get_elastic
 from db.redis import get_redis
 from models.es_models import Film, FilmPaginated
 
-# FILM_CACHE_EXPIRE_IN_SECONDS = 60 * 5
-FILM_CACHE_EXPIRE_IN_SECONDS = 5
+FILM_CACHE_EXPIRE_IN_SECONDS = 60 * 5
 
 
 class ApiSortOptions(str, Enum):
@@ -42,7 +41,8 @@ class FilmService:
     async def get_list(
         self,
         path,
-        sort: ApiSortOptions | None,
+        search_str: str = None,
+        sort: ApiSortOptions = None,
         filter_genre: str = None,
         filter_person: str = None,
         page_size: int = 50,
@@ -83,9 +83,14 @@ class FilmService:
                         }
                     }
                 )
+            query = None
+            if search_str:
+                query = {"multi_match": {"query": "god", "fields": ["title^10", "description"]}}
+            if filters:
+                query = {"bool": {"must": filters}}
             resp = await self.elastic.search(
                 index="movies",
-                query={"bool": {"must": filters}},
+                query=query,
                 sort=ElasticSortMap[sort] if sort else None,
                 size=page_size,
                 from_=(page_number - 1) * page_size if page_number > 1 else 0,

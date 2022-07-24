@@ -6,7 +6,7 @@ from fastapi import Depends
 
 from db.elastic import get_elastic
 from db.redis import get_redis
-from models.api_models import Person, PersonRoleInFilms
+from models.api_models import PersonRoles, PersonRoleInFilms
 
 PERSON_CACHE_EXPIRE_IN_SECONDS = 60 * 5
 
@@ -16,7 +16,7 @@ class PersonsService:
         self.redis = redis
         self.elastic = elastic
 
-    async def get_by_id(self, person_id: str) -> Person | None:
+    async def get_by_id(self, person_id: str) -> PersonRoles | None:
         person = await self._get_person_from_cache(person_id)
         if not person:
             person = await self._get_films_with_person_from_elastic(person_id)
@@ -26,18 +26,18 @@ class PersonsService:
 
         return person
 
-    async def _get_person_from_cache(self, person_id: str) -> Person | None:
+    async def _get_person_from_cache(self, person_id: str) -> PersonRoles | None:
         data = await self.redis.get(person_id)
         if not data:
             return None
 
-        genre = Person.parse_raw(data)
+        genre = PersonRoles.parse_raw(data)
         return genre
 
-    async def _put_person_to_cache(self, person: Person):
+    async def _put_person_to_cache(self, person: PersonRoles):
         await self.redis.set(person.id, person.json(), ex=PERSON_CACHE_EXPIRE_IN_SECONDS)
 
-    async def _get_films_with_person_from_elastic(self, person_id: str) -> Person | None:
+    async def _get_films_with_person_from_elastic(self, person_id: str) -> PersonRoles | None:
         try:
             person_doc = await self.elastic.get(index="persons", id=person_id)
         except NotFoundError:
@@ -97,7 +97,7 @@ class PersonsService:
         if director_films_ids:
             roles.append(PersonRoleInFilms(role="director", film_ids=director_films_ids))
 
-        return Person(id=person_id, full_name=person_doc.body["_source"]["full_name"], roles=roles)
+        return PersonRoles(id=person_id, full_name=person_doc.body["_source"]["full_name"], roles=roles)
 
 
 @lru_cache()

@@ -1,22 +1,21 @@
-from models.common import Base
+from models.common import IdModel, Paginated, Person, Genre
 
 
-class Person(Base):
-    name: str
-
-
-class Film(Base):
+class Film(IdModel):
     title: str
     description: str | None
-    imdb_rating: int | None
-    genre: list[str] = []
+    imdb_rating: float | None = 0.0
+    genres: list[Genre] = []
     actors_names: list[str] | None = None
     writers_names: list[str] | None = None
     writers: list[Person] | None
     actors: list[Person] | None
-    director: list[str] | str | None
+    directors: list[Person] | None
 
 
-class Genre(Base):
-    name: str
+class GenreDescripted(Genre):
     description: str | None
+
+
+class FilmPaginated(Paginated):
+    results: list[Film]
