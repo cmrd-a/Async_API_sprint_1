@@ -17,5 +17,5 @@ class GenreDescripted(Genre):
     description: str | None
 
 
-class FilmPaginated(Paginated):
+class Films(Paginated):
     results: list[Film]

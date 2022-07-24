@@ -17,6 +17,7 @@ class Settings(BaseSettings):
 
     redis_host: str = Field(env="REDIS_HOST", default="redis://127.0.0.1")
     redis_port: int = Field(env="REDIS_PORT", default=6379)
+    redis_cache_expire_in_seconds: int = Field(env="REDIS_CACHE_EXPIRE_IN_SECONDS", default=300)
 
     @property
     def es_url(self):
