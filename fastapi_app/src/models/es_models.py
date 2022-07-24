@@ -13,9 +13,5 @@ class Film(IdModel):
     directors: list[Person] | None
 
 
-class GenreDescripted(Genre):
-    description: str | None
-
-
 class Films(Paginated):
     results: list[Film]
