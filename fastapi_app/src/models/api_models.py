@@ -1,3 +1,5 @@
+from pydantic import BaseModel
+
 from models.common import Base
 
 
@@ -14,7 +16,11 @@ class FilmByPerson(Base):
     imdb_rating: float
 
 
-class Person(Base):
-    full_name: str
+class PersonRoleInFilms(BaseModel):
     role: str
     film_ids: list[str]
+
+
+class Person(Base):
+    full_name: str
+    roles: list[PersonRoleInFilms]
