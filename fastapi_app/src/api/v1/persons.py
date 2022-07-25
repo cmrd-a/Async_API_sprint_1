@@ -29,8 +29,8 @@ async def persons_search(
     request: Request,
     query: str,
     person_service: PersonsService = Depends(get_persons_service),
-    page_size: int = Query(default=50, alias="page[size]", description="Размер страницы"),
-    page_number: int = Query(default=1, alias="page[number]", description="Номер страницы"),
+    page_size: int = Query(default=50, alias="page[size]", description="Размер страницы", lt=0, gt=100),
+    page_number: int = Query(default=1, alias="page[number]", description="Номер страницы", lt=0, gt=1000),
 ) -> PersonSearch:
     person = await person_service.search(
         request.query_params,
