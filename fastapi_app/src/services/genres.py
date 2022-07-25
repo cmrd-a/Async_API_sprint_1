@@ -16,18 +16,17 @@ class GenresService(RedisService):
         self.elastic = elastic
 
     async def get_by_id(self, genre_id: str) -> GenreDescripted | None:
-        genre = await self._get_from_cache(key=genre_id, model=GenreDescripted)
+        redis_key = f"genres::genre_id::{genre_id}"
+        genre = await self._get_from_cache(key=redis_key, model=GenreDescripted)
         if not genre:
             genre = await self._get_genre_from_elastic(genre_id)
             if not genre:
                 return None
-            await self._put_to_cache(key=genre_id, obj=genre)
+            await self._put_to_cache(key=redis_key, obj=genre)
 
         return genre
 
-    async def get_list(
-        self,
-    ) -> GenresDescripted | None:
+    async def get_list(self) -> GenresDescripted | None:
         genres = await self._get_from_cache(key="genres", model=GenresDescripted)
 
         if not genres:

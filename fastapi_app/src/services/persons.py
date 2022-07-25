@@ -16,17 +16,19 @@ class PersonsService(RedisService):
         self.elastic = elastic
 
     async def get_by_id(self, person_id: str) -> PersonWithFilms | None:
-        person = await self._get_from_cache(key=person_id, model=PersonWithFilms)
+        redis_key = f"persons::person_id::{person_id}"
+        person = await self._get_from_cache(key=redis_key, model=PersonWithFilms)
         if not person:
             person = await self._get_person_with_films_from_elastic(person_id)
             if not person:
                 return None
-            await self._put_to_cache(key=person_id, obj=person)
+            await self._put_to_cache(key=redis_key, obj=person)
 
         return person
 
     async def get_film_detail_by_person(self, person_id: str) -> FilmsByPerson | None:
-        person_with_films = await self._get_from_cache(key=f"film_detail{person_id}", model=FilmsByPerson)
+        redis_key = f"persons::person_id::{person_id}"
+        person_with_films = await self._get_from_cache(key=redis_key, model=FilmsByPerson)
         films = []
         films_rated = []
         if not person_with_films:
@@ -43,13 +45,13 @@ class PersonsService(RedisService):
 
         if films_rated:
             films_rated_obj = FilmsByPerson(films=films_rated)
-            await self._put_to_cache(key=f"film_detail{person_id}", obj=films_rated_obj)
+            await self._put_to_cache(key=redis_key, obj=films_rated_obj)
             return films_rated_obj
 
         return
 
-    async def search(self, params, search_str: str, page_size: int = 50, page_number: int = 1) -> PersonSearch | None:
-        redis_key = f"persons/{params}"
+    async def search(self, search_str: str, page_size: int = 50, page_number: int = 1) -> PersonSearch | None:
+        redis_key = f"persons::search_str::{search_str}::page_size::{page_size}::page_number::{page_number}"
         person = await self._get_from_cache(key=redis_key, model=PersonSearch)
         if not person:
             person = await self._get_films_by_person_full_name_from_elastic(

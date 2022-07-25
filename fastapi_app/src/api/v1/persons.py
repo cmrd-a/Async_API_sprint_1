@@ -27,14 +27,12 @@ async def film_details_by_person(
 
 @router.get("/search", response_model=PersonSearch, summary="Поиск актера по подстроке имени")
 async def persons_search(
-    request: Request,
     query: str,
     person_service: PersonsService = Depends(get_persons_service),
     page_size: int = Query(default=50, alias="page[size]", description="Размер страницы", lt=0, gt=100),
     page_number: int = Query(default=1, alias="page[number]", description="Номер страницы", lt=0, gt=1000),
 ) -> PersonSearch:
     person = await person_service.search(
-        request.query_params,
         search_str=query,
         page_size=page_size,
         page_number=page_number,

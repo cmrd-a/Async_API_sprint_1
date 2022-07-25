@@ -28,18 +28,18 @@ class FilmService(RedisService):
         self.elastic = elastic
 
     async def get_film(self, film_id: str) -> Film | None:
-        film = await self._get_from_cache(film_id, Film)
+        redis_key = f"movies::film_id::{film_id}"
+        film = await self._get_from_cache(redis_key, Film)
         if not film:
             film = await self._get_film_from_elastic(film_id)
             if not film:
                 return None
-            await self._put_to_cache(film_id, film)
+            await self._put_to_cache(redis_key, film)
 
         return film
 
     async def get_films(
         self,
-        params,
         search_str: str = None,
         sort: ApiSortOptions = None,
         filter_genre: str = None,
@@ -47,7 +47,8 @@ class FilmService(RedisService):
         page_size: int = 50,
         page_number: int = 1,
     ) -> Films | None:
-        redis_key = f"films/{params}"
+        redis_key = f"movies::search_str::{search_str}::sort::{sort}::filter_genre::{filter_genre}::filter_person" \
+                    f"::{filter_person}::page_size::{page_size}::page_number::{page_number}"
         films = await self._get_from_cache(redis_key, Films)
         if not films:
             films = await self._get_films_from_elastic(
