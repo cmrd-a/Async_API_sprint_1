@@ -48,8 +48,9 @@ class PersonsService(RedisService):
 
         return
 
-    async def search(self, search_str: str, page_size: int = 50, page_number: int = 1) -> PersonSearch | None:
-        person = await self._get_from_cache(key=search_str, model=PersonSearch)
+    async def search(self, params, search_str: str, page_size: int = 50, page_number: int = 1) -> PersonSearch | None:
+        redis_key = f"persons/{params}"
+        person = await self._get_from_cache(key=redis_key, model=PersonSearch)
         if not person:
             person = await self._get_films_by_person_full_name_from_elastic(
                 search_str=search_str,
@@ -58,7 +59,7 @@ class PersonsService(RedisService):
             )
             if not person:
                 return None
-            await self._put_to_cache(key=search_str, obj=person)
+            await self._put_to_cache(key=redis_key, obj=person)
 
         return person
 
@@ -91,6 +92,7 @@ class PersonsService(RedisService):
                     }
                 }
             },
+            size=999,
         )
 
         hits_list = films_doc.body.get("hits", {}).get("hits", [])
@@ -148,12 +150,12 @@ class PersonsService(RedisService):
         return PersonWithFilms(id=person_id, roles=roles, full_name=person_name)
 
     async def _get_films_by_person_full_name_from_elastic(
-        self, search_str: str = None, page_size: int = 50, page_number: int = 1
+        self, search_str: str, page_size: int = 50, page_number: int = 1
     ) -> PersonSearch | None:
 
         persons_doc = await self.elastic.search(
             index="persons",
-            query={"bool": {"should": {"match": {"full_name": search_str}}}},
+            query={"match": {"full_name": {"query": search_str}}},
             size=page_size,
             from_=(page_number - 1) * page_size if page_number > 1 else 0,
         )

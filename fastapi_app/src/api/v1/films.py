@@ -34,7 +34,7 @@ async def films_list(
 @router.get("/search", response_model=FilmsRated, summary="Поиск фильмов по названию и описанию")
 async def films_search(
     request: Request,
-    query: str | None = Query(default=None, description="Поисковый запрос"),
+    query: str = Query(min_length=3, description="Поисковый запрос"),
     page_size: int = Query(default=50, alias="page[size]", description="Размер страницы"),
     page_number: int = Query(default=1, alias="page[number]", description="Номер страницы"),
     film_service: FilmService = Depends(get_film_service),

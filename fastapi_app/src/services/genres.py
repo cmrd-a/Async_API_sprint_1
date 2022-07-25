@@ -31,7 +31,7 @@ class GenresService(RedisService):
         genres = await self._get_from_cache(key="genres", model=GenresDescripted)
 
         if not genres:
-            resp = await self.elastic.search(index="genres", query={"match_all": {}}, sort=None)
+            resp = await self.elastic.search(index="genres", size=999)
             hits = resp.body.get("hits", {}).get("hits", [])
             genres = [GenreDescripted(**hit["_source"]) for hit in hits]
 

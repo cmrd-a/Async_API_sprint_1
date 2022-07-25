@@ -39,7 +39,7 @@ class FilmService(RedisService):
 
     async def get_films(
         self,
-        path,
+        params,
         search_str: str = None,
         sort: ApiSortOptions = None,
         filter_genre: str = None,
@@ -47,7 +47,7 @@ class FilmService(RedisService):
         page_size: int = 50,
         page_number: int = 1,
     ) -> Films | None:
-        redis_key = f"films/{path}"
+        redis_key = f"films/{params}"
         films = await self._get_from_cache(redis_key, Films)
         if not films:
             films = await self._get_films_from_elastic(
