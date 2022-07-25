@@ -14,8 +14,8 @@ async def films_list(
     sort: ApiSortOptions | None = Query(default=None, description="Сортировка"),
     filter_genre: str | None = Query(default=None, alias="filter[genre]", description="Фильтр по жанру(UUID)"),
     filter_person: str | None = Query(default=None, alias="filter[person]", description="Фильтр по персоне(UUID)"),
-    page_size: int = Query(default=50, alias="page[size]", description="Размер страницы", lt=0, gt=100),
-    page_number: int = Query(default=1, alias="page[number]", description="Номер страницы", lt=0, gt=1000),
+    page_size: int = Query(default=50, alias="page[size]", description="Размер страницы", gt=0, lt=100),
+    page_number: int = Query(default=1, alias="page[number]", description="Номер страницы", gt=0, lt=1000),
     film_service: FilmService = Depends(get_film_service),
 ):
     films = await film_service.get_films(
@@ -33,8 +33,8 @@ async def films_list(
 @router.get("/search", response_model=FilmsRated, summary="Поиск фильмов по названию и описанию")
 async def films_search(
     query: str = Query(min_length=3, description="Поисковый запрос"),
-    page_size: int = Query(default=50, alias="page[size]", description="Размер страницы", lt=0, gt=100),
-    page_number: int = Query(default=1, alias="page[number]", description="Номер страницы", lt=0, gt=1000),
+    page_size: int = Query(default=50, alias="page[size]", description="Размер страницы", gt=0, lt=100),
+    page_number: int = Query(default=1, alias="page[number]", description="Номер страницы", gt=0, lt=1000),
     film_service: FilmService = Depends(get_film_service),
 ):
     films = await film_service.get_films(

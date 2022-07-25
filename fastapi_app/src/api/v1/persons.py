@@ -29,8 +29,8 @@ async def film_details_by_person(
 async def persons_search(
     query: str,
     person_service: PersonsService = Depends(get_persons_service),
-    page_size: int = Query(default=50, alias="page[size]", description="Размер страницы", lt=0, gt=100),
-    page_number: int = Query(default=1, alias="page[number]", description="Номер страницы", lt=0, gt=1000),
+    page_size: int = Query(default=50, alias="page[size]", description="Размер страницы", gt=0, lt=100),
+    page_number: int = Query(default=1, alias="page[number]", description="Номер страницы", gt=0, lt=1000),
 ) -> PersonSearch:
     person = await person_service.search(
         search_str=query,
