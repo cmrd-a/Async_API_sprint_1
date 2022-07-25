@@ -27,21 +27,23 @@ class PersonsService(RedisService):
         return person
 
     async def get_film_detail_by_person(self, person_id: str) -> FilmsByPerson | None:
-        redis_key = f"persons::person_id::{person_id}"
-        person_with_films = await self._get_from_cache(key=redis_key, model=FilmsByPerson)
-        films = []
-        films_rated = []
+        redis_key = f"movies::person_id::{person_id}"
+        films_rated = await self._get_from_cache(key=redis_key, model=FilmsByPerson)
+
+        if films_rated:
+            return FilmsByPerson(films=films_rated.films)
+
+        person_with_films = await self._get_film_details_by_person_id(person_id=person_id)
+
         if not person_with_films:
-            person_with_films = await self._get_film_details_by_person_id(person_id=person_id)
+            return
 
-            if not person_with_films:
-                return
+        films = []
+        for role in person_with_films.roles:
+            films.extend(role.films_details)
 
-            for role in person_with_films.roles:
-                films.extend(role.films_details)
-
-            seen = set()
-            films_rated = [seen.add(film.id) or film for film in films if film.id not in seen]
+        seen = set()
+        films_rated = [seen.add(film.id) or film for film in films if film.id not in seen]
 
         if films_rated:
             films_rated_obj = FilmsByPerson(films=films_rated)
