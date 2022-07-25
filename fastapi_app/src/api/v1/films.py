@@ -2,6 +2,7 @@ from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Path
 
+from local.detail_messages import FILM_NOT_FOUND, FILMS_NOT_FOUND
 from models.api_models import FilmFull, FilmsRated
 from services.films import FilmService, get_film_service, ApiSortOptions
 
@@ -27,7 +28,7 @@ async def films_list(
         page_number=page_number,
     )
     if not films:
-        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="films not found")
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail=FILMS_NOT_FOUND)
     return films
 
 
@@ -43,7 +44,7 @@ async def films_search(
         request.query_params, search_str=query, page_size=page_size, page_number=page_number
     )
     if not films:
-        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="films not found")
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail=FILMS_NOT_FOUND)
     return films
 
 
@@ -53,5 +54,5 @@ async def film_details(
 ):
     film = await film_service.get_film(film_id)
     if not film:
-        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="film not found")
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail=FILM_NOT_FOUND)
     return film

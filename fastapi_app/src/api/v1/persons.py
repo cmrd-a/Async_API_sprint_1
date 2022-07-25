@@ -2,6 +2,7 @@ from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Path, Request
 
+from local.detail_messages import FILM_DETAILS_NOT_FOUND, PERSON_NOT_FOUND, PERSONS_NOT_FOUND
 from models.api_models import PersonSearch, PersonWithFilms, FilmsByPerson
 from services.persons import PersonsService, get_persons_service
 
@@ -20,7 +21,7 @@ async def film_details_by_person(
 ):
     film_details = await person_service.get_film_detail_by_person(person_id=person_id)
     if not film_details:
-        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="film details not found")
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail=FILM_DETAILS_NOT_FOUND)
     return film_details
 
 
@@ -39,7 +40,7 @@ async def persons_search(
         page_number=page_number,
     )
     if not person:
-        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="persons not found")
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail=PERSONS_NOT_FOUND)
     return person
 
 
@@ -49,5 +50,5 @@ async def person_by_id(
 ) -> PersonWithFilms:
     person = await person_service.get_by_id(person_id)
     if not person:
-        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="person not found")
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail=PERSON_NOT_FOUND)
     return person

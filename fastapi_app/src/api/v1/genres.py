@@ -2,6 +2,7 @@ from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, HTTPException, Path
 
+from local.detail_messages import GENRE_NOT_FOUND, GENRES_NOT_FOUND
 from models.api_models import GenresDescripted, GenreDescripted
 from models.common import Genre
 from services.genres import get_genres_service, GenresService
@@ -15,7 +16,7 @@ async def genre_details(
 ) -> Genre:
     genre = await genre_service.get_by_id(genre_id)
     if not genre:
-        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="genre not found")
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail=GENRE_NOT_FOUND)
     return Genre(id=genre.id, name=genre.name)
 
 
@@ -23,5 +24,5 @@ async def genre_details(
 async def genres_list(genre_service: GenresService = Depends(get_genres_service)) -> GenresDescripted:
     genres = await genre_service.get_list()
     if not genres:
-        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="genres not found")
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail=GENRES_NOT_FOUND)
     return genres
