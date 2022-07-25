@@ -2,7 +2,7 @@ from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Path
 
-from local.detail_messages import FILM_NOT_FOUND, FILMS_NOT_FOUND
+from messages.error_messages import FILM_NOT_FOUND, FILMS_NOT_FOUND
 from models.api_models import FilmFull, FilmsRated
 from services.films import FilmService, get_film_service, ApiSortOptions
 
